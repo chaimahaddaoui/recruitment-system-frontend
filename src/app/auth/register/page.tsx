@@ -14,12 +14,12 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     phone: '',
-    role: 'CANDIDATE',
+    role: 'CANDIDATE', // ← Fixé à CANDIDATE
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -32,28 +32,15 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/register', formData);
+      const response = await api.post('/auth/register', {
+        ...formData,
+        role: 'CANDIDATE', // ← Toujours CANDIDATE
+      });
       
-      // Sauvegarder le token
       if (response.data.access_token) {
         Cookies.set('token', response.data.access_token, { expires: 7 });
         Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
-        
-        // Redirection selon le rôle
-        switch (response.data.user.role) {
-          case 'CANDIDATE':
-            router.push('/dashboard/candidate');
-            break;
-          case 'RECRUITER':
-            router.push('/dashboard/recruiter');
-            break;
-          case 'HR_MANAGER':
-          case 'ADMIN':
-            router.push('/dashboard/hr-manager');
-            break;
-          default:
-            router.push('/');
-        }
+        router.push('/dashboard/candidate');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Échec de l\'inscription');
@@ -66,21 +53,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-2xl">
         <div className="text-center mb-8">
-         {/* Bouton retour accueil */}
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            ← Retour à l'accueil
-          </Link>
-        </div>
-
           <h2 className="text-4xl font-bold text-gray-900 mb-2">
-            Inscription
+            Inscription Candidat
           </h2>
           <p className="text-gray-600">
-            Créez votre compte 
+            Créez votre compte pour postuler
           </p>
         </div>
 
@@ -105,7 +82,6 @@ export default function RegisterPage() {
                 value={formData.firstName}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="exemple"
               />
             </div>
 
@@ -121,7 +97,6 @@ export default function RegisterPage() {
                 value={formData.lastName}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="exemple"
               />
             </div>
           </div>
@@ -138,7 +113,6 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="votre.email@exemple.com"
             />
           </div>
 
@@ -153,7 +127,6 @@ export default function RegisterPage() {
               value={formData.phone}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="+216 123 456 78"
             />
           </div>
 
@@ -173,39 +146,19 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div>
-            <label htmlFor="role" className="block text-sm font-semibold text-gray-700 mb-2">
-              Je suis...
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="CANDIDATE"> Candidat</option>
-              <option value="RECRUITER"> Recruteur</option>
-              <option value="HR_MANAGER"> Responsable RH</option>
-            </select>
+          {/* Message informatif */}
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <p className="text-sm text-blue-700">
+              ℹ️ Cette inscription est réservée aux candidats. Les comptes recruteurs et RH sont créés par l'administrateur.
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50"
           >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Inscription...
-              </span>
-            ) : (
-              'S\'inscrire'
-            )}
+            {loading ? 'Inscription...' : 'S\'inscrire en tant que Candidat'}
           </button>
 
           <div className="text-center pt-4 border-t border-gray-200">

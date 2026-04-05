@@ -45,20 +45,26 @@ export default function LoginPage() {
         Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
 
         // Redirection selon le rôle
-        switch (response.data.user.role) {
-          case 'CANDIDATE':
-            router.push('/dashboard/candidate');
-            break;
-          case 'RECRUITER':
-            router.push('/dashboard/recruiter');
-            break;
-          case 'HR_MANAGER':
-          case 'ADMIN':
-            router.push('/dashboard/hr-manager');
-            break;
-          default:
-            router.push('/');
-        }
+       switch (response.data.user.role) {
+        case 'ADMIN':
+          router.push('/dashboard/admin');
+        break;
+
+      case 'HR_MANAGER':
+    router.push('/dashboard/hr-manager');
+    break;
+
+  case 'RECRUITER':
+    router.push('/dashboard/recruiter');
+    break;
+
+  case 'CANDIDATE':
+    router.push('/dashboard/candidate');
+    break;
+
+  default:
+    router.push('/');
+}
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Échec de la connexion');
