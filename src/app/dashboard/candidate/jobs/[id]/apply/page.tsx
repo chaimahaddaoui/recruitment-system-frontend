@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
+import { applicationService } from '@/services/applicationService';
 
 export default function ApplyPage() {
   const router = useRouter();
   const params = useParams();
-  const jobId = parseInt(params.id as string);
+  const jobId = params?.id ? parseInt(params.id as string) : null;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -50,50 +51,45 @@ export default function ApplyPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    // Validation
-    if (!formData.coverLetter.trim()) {
-      setError('La lettre de motivation est obligatoire');
+  // Validation
+  if (!formData.coverLetter.trim()) {
+    setError('La lettre de motivation est obligatoire');
+    setLoading(false);
+    return;
+  }
+
+  if (!formData.cvFile) {
+    setError('Le CV est obligatoire');
+    setLoading(false);
+    return;
+  }
+
+  try {
+    // Utiliser le service
+    if (!jobId) {
+      setError('ID de l\'offre invalide');
       setLoading(false);
       return;
     }
+    await applicationService.apply(jobId, formData.coverLetter, formData.cvFile);
 
-    if (!formData.cvFile) {
-      setError('Le CV est obligatoire');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Créer FormData pour l'upload
-      const submitData = new FormData();
-      submitData.append('jobId', jobId.toString());
-      submitData.append('coverLetter', formData.coverLetter);
-      submitData.append('cv', formData.cvFile);
-
-      // Envoyer la candidature
-      await api.post('/applications', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setSuccess(true);
-      
-      // Rediriger après 2 secondes
-      setTimeout(() => {
-        router.push('/dashboard/candidate/applications');
-      }, 2000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur lors de l\'envoi de la candidature');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setSuccess(true);
+    
+    // Rediriger après 2 secondes
+    setTimeout(() => {
+      router.push('/dashboard/candidate/applications');
+    }, 2000);
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Erreur lors de l\'envoi de la candidature');
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (success) {
     return (

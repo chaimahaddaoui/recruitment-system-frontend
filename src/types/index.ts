@@ -91,3 +91,31 @@ export interface CreateJobDto {
   educationLevel: string;
   skills: string[];
 }
+// ... (garder les types existants)
+
+export enum ApplicationStatus {
+  SUBMITTED = 'SUBMITTED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  INTERVIEW_SCHEDULED = 'INTERVIEW_SCHEDULED',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}
+
+export interface Application {
+  id: number;
+  jobId: number;
+  candidateId: number;
+  cvPath: string | null;
+  coverLetter: string | null;
+  status: ApplicationStatus;
+  createdAt: string;
+  updatedAt: string;
+  job?: Job;
+  candidate?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string | null;
+  };
+}
