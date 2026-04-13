@@ -119,3 +119,51 @@ export interface Application {
     phone: string | null;
   };
 }
+
+
+export enum InterviewType {
+  HR = 'HR',
+  TECHNICAL = 'TECHNICAL',
+  FINAL = 'FINAL',
+}
+
+export enum InterviewStatus {
+  SCHEDULED = 'SCHEDULED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  PASSED = 'PASSED',
+  FAILED = 'FAILED',
+}
+
+export interface Interview {
+  id: number;
+  applicationId: number;
+  type: InterviewType;
+  status: InterviewStatus;
+  scheduledAt: string;
+  duration?: number;
+  location?: string;
+  interviewerId: number;
+  interviewer?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role?: string;
+  };
+  notes?: string;
+  evaluation?: string;
+  passed?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+  application?: {
+    candidate?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    job?: {
+      title: string;
+    };
+  };
+}

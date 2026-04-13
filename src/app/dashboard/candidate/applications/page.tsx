@@ -4,7 +4,7 @@ import { JSX, useEffect, useState } from 'react';
 import api from '@/lib/api';
 
 export default function ApplicationsPage(): JSX.Element {
-  const [applications, setApplications] = useState<any[]>([]); // ✅ tableau typé
+  const [applications, setApplications] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function ApplicationsPage(): JSX.Element {
 
         console.log('API RESPONSE:', response.data);
 
-        // 🔥 CORRECTION DATA
+       
         if (Array.isArray(response.data)) {
           setApplications(response.data);
         } else if (Array.isArray(response.data.applications)) {
@@ -26,7 +26,7 @@ export default function ApplicationsPage(): JSX.Element {
 
       } catch (error) {
         console.error('Erreur:', error);
-        setApplications([]); // sécurité
+        setApplications([]); 
       } finally {
         setLoading(false);
       }
