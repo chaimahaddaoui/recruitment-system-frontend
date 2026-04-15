@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { interviewService } from '@/services/interviewService';
 import { Interview, InterviewStatus } from '@/types';
-
+import InterviewCalendar from '@/components/InterviewCalendar';
 export default function HRManagerDashboard() {
   const router = useRouter();
 
@@ -158,9 +158,22 @@ export default function HRManagerDashboard() {
             </div>
           )}
         </div>
+     
 
+
+        {/* 📅 CALENDRIER */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-xl font-bold mb-4">Calendrier des entretiens</h2>
+          <InterviewCalendar interviews={interviews} />
+        </div>
       </main>
     </div>
+   
+   
+
+
+
+
   );
 }
 

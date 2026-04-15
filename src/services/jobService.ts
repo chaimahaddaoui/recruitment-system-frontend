@@ -1,5 +1,6 @@
 import api from '@/lib/api';
 import { Job, CreateJobDto } from '@/types';
+import Cookies from 'js-cookie';
 
 export const jobService = {
   // Créer une offre
@@ -32,20 +33,45 @@ export const jobService = {
     return response.data;
   },
 
-  // Publier une offre
+  /* // Publier une offre
   async publish(id: number): Promise<Job> {
     const response = await api.patch<Job>(`/jobs/${id}/publish`);
     return response.data;
   },
-
+ */
   // Fermer une offre
   async close(id: number): Promise<Job> {
     const response = await api.patch<Job>(`/jobs/${id}/close`);
     return response.data;
   },
 
+
   // Supprimer une offre
   async delete(id: number): Promise<void> {
     await api.delete(`/jobs/${id}`);
   },
+
+
+  async createJob(data: Partial<Job>): Promise<Job> {
+  console.log('📝 Creating job with data:', data);
+  
+  const token = Cookies.get('token');
+  console.log('🔑 Token:', token ? 'Present' : 'Missing');
+  
+  const response = await api.post<Job>('/jobs', data);
+  console.log('✅ Job created:', response.data);
+  return response.data;
+
+  
+},
+ // RH : valider et publier une offre (DRAFT → OPEN)
+  async validate(id: number): Promise<Job> {
+    const response = await api.patch<Job>(`/jobs/${id}/validate`);
+    return response.data;
+  },
+
+
+
+
+
 };

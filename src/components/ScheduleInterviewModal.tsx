@@ -26,15 +26,15 @@ export default function ScheduleInterviewModal({
   });
 
   const getTypeLabel = () => {
-    switch (interviewType) {
-      case InterviewType.HR:
-        return 'Entretien RH #1 (Screening)';
-      case InterviewType.TECHNICAL:
-        return 'Entretien Technique';
-      case InterviewType.FINAL:
-        return 'Entretien RH #2 (Négociation)';
-    }
-  };
+  switch (interviewType) {
+    case InterviewType.HR_SCREENING:
+      return 'Entretien RH #1 (Screening)';
+    case InterviewType.TECHNICAL:
+      return 'Entretien Technique';
+    case InterviewType.HR_FINAL:
+      return 'Entretien RH #2 (Final)';
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

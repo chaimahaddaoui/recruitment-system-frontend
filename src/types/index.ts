@@ -122,9 +122,11 @@ export interface Application {
 
 
 export enum InterviewType {
-  HR = 'HR',
+  HR_SCREENING = 'HR_SCREENING',
   TECHNICAL = 'TECHNICAL',
-  FINAL = 'FINAL',
+  HR_FINAL = 'HR_FINAL',
+  HR = "HR",
+  FINAL = "FINAL",
 }
 
 export enum InterviewStatus {
