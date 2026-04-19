@@ -95,10 +95,26 @@ export interface CreateJobDto {
 
 export enum ApplicationStatus {
   SUBMITTED = 'SUBMITTED',
-  UNDER_REVIEW = 'UNDER_REVIEW',
-  INTERVIEW_SCHEDULED = 'INTERVIEW_SCHEDULED',
+  SHORTLISTED = 'SHORTLISTED',
+  INTERVIEW_HR_SCREENING = 'INTERVIEW_HR_SCREENING',
+  INTERVIEW_TECHNICAL = 'INTERVIEW_TECHNICAL',
+  INTERVIEW_HR_FINAL = 'INTERVIEW_HR_FINAL',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
+}
+export enum InterviewType {
+  HR_SCREENING = 'HR_SCREENING',
+  TECHNICAL = 'TECHNICAL',
+  HR_FINAL = 'HR_FINAL',
+}
+
+export enum InterviewStatus {
+  SCHEDULED = 'SCHEDULED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  PASSED = 'PASSED',
+  FAILED = 'FAILED',
+  
 }
 
 export interface Application {
@@ -110,7 +126,19 @@ export interface Application {
   status: ApplicationStatus;
   createdAt: string;
   updatedAt: string;
-  job?: Job;
+  job?: {
+    id: number;
+    title: string;
+    location: string;
+    contractType: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    createdBy?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
   candidate?: {
     id: number;
     firstName: string;
@@ -118,24 +146,12 @@ export interface Application {
     email: string;
     phone: string | null;
   };
+  interviews?: Interview[];
 }
 
 
-export enum InterviewType {
-  HR_SCREENING = 'HR_SCREENING',
-  TECHNICAL = 'TECHNICAL',
-  HR_FINAL = 'HR_FINAL',
-  HR = "HR",
-  FINAL = "FINAL",
-}
 
-export enum InterviewStatus {
-  SCHEDULED = 'SCHEDULED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  PASSED = 'PASSED',
-  FAILED = 'FAILED',
-}
+
 
 export interface Interview {
   id: number;

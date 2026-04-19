@@ -1,23 +1,28 @@
 import api from '@/lib/api';
-import { Job, CreateJobDto } from '@/types';
-import Cookies from 'js-cookie';
+import { Job } from '@/types';
 
 export const jobService = {
   // Créer une offre
-  async create(data: CreateJobDto): Promise<Job> {
+  async createJob(data: Partial<Job>): Promise<Job> {
     const response = await api.post<Job>('/jobs', data);
     return response.data;
   },
 
-  // Liste des offres ouvertes (pour candidats)
-  async getOpenJobs(): Promise<Job[]> {
-    const response = await api.get<Job[]>('/jobs/open');
+  // Mes offres (Recruteur)
+  async getMyJobs(): Promise<Job[]> {
+    const response = await api.get<Job[]>('/jobs');
     return response.data;
   },
 
-  // Liste de toutes les offres (pour recruteurs/RH)
+  // Toutes les offres (RH Manager / Admin)
   async getAllJobs(): Promise<Job[]> {
     const response = await api.get<Job[]>('/jobs');
+    return response.data;
+  },
+
+  // Offres ouvertes (Candidats)
+  async getOpenJobs(): Promise<Job[]> {
+    const response = await api.get<Job[]>('/jobs/open');
     return response.data;
   },
 
@@ -28,50 +33,41 @@ export const jobService = {
   },
 
   // Modifier une offre
-  async update(id: number, data: Partial<CreateJobDto>): Promise<Job> {
+  async updateJob(id: number, data: Partial<Job>): Promise<Job> {
     const response = await api.patch<Job>(`/jobs/${id}`, data);
     return response.data;
   },
 
-  /* // Publier une offre
-  async publish(id: number): Promise<Job> {
-    const response = await api.patch<Job>(`/jobs/${id}/publish`);
-    return response.data;
-  },
- */
-  // Fermer une offre
-  async close(id: number): Promise<Job> {
-    const response = await api.patch<Job>(`/jobs/${id}/close`);
+  // Soumettre au RH (Recruteur)
+  async submitForValidation(id: number): Promise<Job> {
+    const response = await api.patch<Job>(`/jobs/${id}/submit`);
     return response.data;
   },
 
-
-  // Supprimer une offre
-  async delete(id: number): Promise<void> {
-    await api.delete(`/jobs/${id}`);
-  },
-
-
-  async createJob(data: Partial<Job>): Promise<Job> {
-  console.log('📝 Creating job with data:', data);
-  
-  const token = Cookies.get('token');
-  console.log('🔑 Token:', token ? 'Present' : 'Missing');
-  
-  const response = await api.post<Job>('/jobs', data);
-  console.log('✅ Job created:', response.data);
-  return response.data;
-
-  
-},
- // RH : valider et publier une offre (DRAFT → OPEN)
-  async validate(id: number): Promise<Job> {
+  // Valider et publier (RH)
+  async validateAndPublish(id: number): Promise<Job> {
     const response = await api.patch<Job>(`/jobs/${id}/validate`);
     return response.data;
   },
 
+  // Rejeter (RH)
+  async reject(id: number, feedback: string): Promise<Job> {
+    const response = await api.patch<Job>(`/jobs/${id}/reject`, { feedback });
+    return response.data;
+  },
+
+  // Fermer une offre (RH)
+  async closeJob(id: number): Promise<Job> {
+    const response = await api.patch<Job>(`/jobs/${id}/close`);
+    return response.data;
+  },
+
+ 
 
 
-
-
+  // Supprimer une offre
+  async deleteJob(id: number): Promise<void> {
+    await api.delete(`/jobs/${id}`);
+  },
 };
+

@@ -26,17 +26,28 @@ export default function ScheduleInterviewModal({
   });
 
   const getTypeLabel = () => {
-  switch (interviewType) {
-    case InterviewType.HR_SCREENING:
-      return 'Entretien RH #1 (Screening)';
-    case InterviewType.TECHNICAL:
-      return 'Entretien Technique';
-    case InterviewType.HR_FINAL:
-      return 'Entretien RH #2 (Final)';
-  }
-};
+    switch (interviewType) {
+      case InterviewType.HR_SCREENING:
+        return '🗣️ Entretien RH #1 (Screening)';
+      case InterviewType.TECHNICAL:
+        return '💻 Entretien Technique';
+      case InterviewType.HR_FINAL:
+        return '💼 Entretien RH #2 (Négociation)';
+    }
+  };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const getTypeDescription = () => {
+    switch (interviewType) {
+      case InterviewType.HR_SCREENING:
+        return 'Évaluer la communication, la motivation et l\'adéquation culturelle';
+      case InterviewType.TECHNICAL:
+        return 'Évaluer les compétences techniques et la résolution de problèmes';
+      case InterviewType.HR_FINAL:
+        return 'Négocier le salaire, les avantages et finaliser l\'offre';
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -49,7 +60,6 @@ export default function ScheduleInterviewModal({
         location: formData.location,
         notes: formData.notes,
       });
-      alert('Entretien planifié avec succès !');
       onSuccess();
     } catch (error: any) {
       alert(error.response?.data?.message || 'Erreur lors de la planification');
@@ -62,9 +72,12 @@ export default function ScheduleInterviewModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">
-            📅 Planifier : {getTypeLabel()}
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              📅 Planifier : {getTypeLabel()}
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">{getTypeDescription()}</p>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -84,7 +97,8 @@ export default function ScheduleInterviewModal({
               value={formData.scheduledAt}
               onChange={(e) => setFormData({ ...formData, scheduledAt: e.target.value })}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              min={new Date().toISOString().slice(0, 16)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
@@ -96,7 +110,7 @@ export default function ScheduleInterviewModal({
             <select
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
               <option value={30}>30 minutes</option>
               <option value={45}>45 minutes</option>
@@ -117,7 +131,7 @@ export default function ScheduleInterviewModal({
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               required
               placeholder="Salle de réunion 3A ou https://meet.google.com/..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
@@ -131,7 +145,7 @@ export default function ScheduleInterviewModal({
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={4}
               placeholder="Points à aborder, documents à préparer..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
             />
           </div>
 
@@ -140,7 +154,7 @@ export default function ScheduleInterviewModal({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-lg transition"
+              className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-lg transition shadow-lg"
             >
               {loading ? 'Planification...' : '✅ Planifier l\'entretien'}
             </button>

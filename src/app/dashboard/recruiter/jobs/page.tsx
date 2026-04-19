@@ -29,7 +29,7 @@ export default function RecruiterJobsPage() {
 
   const handlePublish = async (id: number) => {
     try {
-      await jobService.publish(id);
+      await jobService.validateAndPublish(id);
       fetchJobs(); // Recharger la liste
     } catch (err) {
       alert('Erreur lors de la publication');
@@ -39,7 +39,7 @@ export default function RecruiterJobsPage() {
   const handleClose = async (id: number) => {
     if (confirm('Êtes-vous sûr de vouloir fermer cette offre ?')) {
       try {
-        await jobService.close(id);
+        await jobService.closeJob(id);
         fetchJobs();
       } catch (err) {
         alert('Erreur lors de la fermeture');
@@ -50,7 +50,7 @@ export default function RecruiterJobsPage() {
   const handleDelete = async (id: number) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
       try {
-        await jobService.delete(id);
+        await jobService.deleteJob(id);
         fetchJobs();
       } catch (err) {
         alert('Erreur lors de la suppression');
@@ -216,6 +216,14 @@ export default function RecruiterJobsPage() {
                   >
                     🗑️ Supprimer
                   </button>
+
+                 <Link
+  href={`/dashboard/recruiter/jobs/${job.id}/applications`}  // ← BACKTICKS!
+  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition"
+>
+  📨 Voir les candidatures ({job._count?.applications || 0})
+</Link>
+
                 </div>
               </div>
             ))}

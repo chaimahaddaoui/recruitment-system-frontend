@@ -37,24 +37,27 @@ export default function RecruiterDashboard() {
 
   const fetchStats = async () => {
     try {
-      const jobs = await jobService.getAllJobs();
+      const jobs = await jobService.getMyJobs();
       const activeJobs = jobs.filter(j => j.status === 'OPEN').length;
       
-      // Calculer le total de candidatures
       let totalApps = 0;
       let pendingReview = 0;
       
       for (const job of jobs) {
-        const apps = await applicationService.getApplicationsByJob(job.id);
-        totalApps += apps.length;
-        pendingReview += apps.filter(a => a.status === 'SUBMITTED').length;
+        try {
+          const apps = await applicationService.getApplicationsByJob(job.id);
+          totalApps += apps.length;
+          pendingReview += apps.filter(a => a.status === 'SUBMITTED').length;
+        } catch (error) {
+          console.error(`Erreur pour job ${job.id}:`, error);
+        }
       }
 
       setStats({
         activeJobs,
         totalApplications: totalApps,
         pendingReview,
-        scheduledInterviews: 0, // TODO: compter les entretiens
+        scheduledInterviews: 0,
       });
     } catch (error) {
       console.error('Erreur:', error);
@@ -131,7 +134,7 @@ export default function RecruiterDashboard() {
         {/* Actions rapides */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Actions rapides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Créer une offre */}
             <Link
               href="/dashboard/recruiter/jobs/create"
@@ -146,6 +149,22 @@ export default function RecruiterDashboard() {
               </div>
             </Link>
 
+                          <Link
+                href="/dashboard/recruiter/jobs/${job.id}/applications"
+                
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-lg p-8 transition transform hover:scale-105"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">📨 Voir candidatures</h3>
+                    <p className="text-orange-100">
+                      Accéder aux candidatures par offre
+                    </p>
+                  </div>
+                  <div className="text-6xl">📥</div>
+                </div>
+              </Link>
+
             {/* Voir mes offres */}
             <Link
               href="/dashboard/recruiter/jobs"
@@ -154,7 +173,7 @@ export default function RecruiterDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">📋 Voir mes offres</h3>
-                  <p className="text-green-100">Gérer mes offres et candidatures</p>
+                  <p className="text-green-100">Gérer mes offres d'emploi</p>
                 </div>
                 <div className="text-6xl">💼</div>
               </div>
@@ -168,7 +187,7 @@ export default function RecruiterDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">📅 Mes Entretiens</h3>
-                  <p className="text-purple-100">Gérer mes entretiens techniques planifiés</p>
+                  <p className="text-purple-100">Entretiens techniques planifiés</p>
                 </div>
                 <div className="text-6xl">💻</div>
               </div>
