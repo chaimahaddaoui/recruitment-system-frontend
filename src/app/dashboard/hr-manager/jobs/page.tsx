@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { jobService } from '@/services/jobService';
-import { Job } from '@/types';
+import { Job, JobStatus } from '@/types';
 import Link from 'next/link';
 
 export default function HRJobsPage() {
@@ -32,7 +32,7 @@ export default function HRJobsPage() {
     try {
       setLoadingId(id);
 
-      await jobService.validate(id);
+      await jobService.updateJob(id, { status: JobStatus.OPEN });
 
       await fetchJobs();
 
@@ -88,17 +88,34 @@ export default function HRJobsPage() {
     <div className="min-h-screen bg-gray-100">
       
       {/* HEADER */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between">
-          <h1 className="text-3xl font-bold text-purple-600">
-            Dashboard RH - Offres
-          </h1>
+     
 
-          <Link href="/dashboard/hr-manager" className="text-gray-600">
-            ← Retour
-          </Link>
+<header className="bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-50">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+          <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
-      </header>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Offres</h1>
+          <p className="text-sm text-gray-600">Valider et publier les offres d'emploi</p>
+        </div>
+      </div>
+      <Link 
+        href="/dashboard/hr-manager" 
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold transition"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Retour
+      </Link>
+    </div>
+  </div>
+</header>
 
       {/* CONTENT */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -145,13 +162,17 @@ export default function HRJobsPage() {
                 {/* BUTTONS */}
                 <div className="flex gap-3 mt-5">
 
-                  {/* 🔵 Modifier */}
-                  <button
-                    onClick={() => handleEdit(job.id)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    Modifier
-                  </button>
+                 
+                {/* Modifier */}
+                <Link
+                  href={`/dashboard/hr-manager/jobs/edit/${job.id}`}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold transition"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Modifier
+                </Link>
 
                   {/* 🟢 Publier (seulement DRAFT) */}
                   {job.status === 'DRAFT' && (

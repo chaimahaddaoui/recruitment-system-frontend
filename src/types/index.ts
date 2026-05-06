@@ -53,6 +53,7 @@ export enum JobStatus {
 }
 
 export interface Job {
+  salary: string;
   id: number;
   title: string;
   description: string;

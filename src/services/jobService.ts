@@ -69,5 +69,11 @@ export const jobService = {
   async deleteJob(id: number): Promise<void> {
     await api.delete(`/jobs/${id}`);
   },
+
+
+
+
+
+
 };
 
