@@ -6,6 +6,7 @@ import { Interview, InterviewType, InterviewStatus } from '@/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from "react-hot-toast";
+import api from '@/lib/api';
 export default function RecruiterInterviewsPage() {
   const router = useRouter();
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -122,6 +123,27 @@ export default function RecruiterInterviewsPage() {
       } catch (error) {
         toast.error('❌ Erreur lors de l\'annulation');
       }
+    }
+  };
+  const handleValidateTechnical = async (interviewId: number) => {
+    const notes = prompt('Ajoute tes notes sur l\'entretien:');
+    if (!notes) return;
+
+    const rating = prompt('Note (1-10):');
+    if (!rating) return;
+
+    const parsedRating = parseInt(rating, 10);
+
+    try {
+      await api.patch(`/applications/technical/${interviewId}/validate`, {
+        notes,
+        rating: parsedRating,
+      });
+
+      toast.success('✅ Candidat validé! Passage à RH Final');
+      fetchInterviews(); // Recharge
+    } catch (error) {
+      toast.error('Erreur validation');
     }
   };
 
