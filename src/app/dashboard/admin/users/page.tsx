@@ -1,9 +1,10 @@
 'use client';
-
+import { adminService } from '@/services/adminService';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
-
+import toast from "react-hot-toast";
+import { showConfirmDialog } from '@/components/ConfirmDialog';
 interface User {
   id: number;
   email: string;
@@ -27,27 +28,38 @@ export default function UsersListPage() {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await api.get('/admin/users');
-      setUsers(response.data);
-    } catch (err: any) {
-      setError('Erreur lors du chargement des utilisateurs');
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchUsers = async () => {
+  try {
+    const response = await adminService.getAllUsers();
+    setUsers(response);
+  } catch (err: any) {
+    toast.error('Erreur lors du chargement des utilisateurs');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleDelete = async (id: number, email: string) => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${email} ?`)) return;
 
-    try {
-      await api.delete(`/admin/users/${id}`);
-      fetchUsers();
-    } catch (err) {
-      alert('Erreur lors de la suppression');
-    }
-  };
+ const handleDelete = async (id: number, email: string) => {
+  showConfirmDialog({
+    title: 'Supprimer cet utilisateur ?',
+    message: `L'utilisateur ${email} sera définitivement supprimé.`,
+    confirmText: 'Supprimer',
+    confirmColor: 'red',
+    onConfirm: async () => {
+      const loadingToast = toast.loading('Suppression en cours...');
+      try {
+        await adminService.deleteUser(id);
+        await fetchUsers();
+        toast.success('Utilisateur supprimé avec succès !', { id: loadingToast });
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message || 'Erreur lors de la suppression';
+        toast.error(errorMessage, { id: loadingToast });
+      }
+    },
+  });
+};
+
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -199,16 +211,7 @@ export default function UsersListPage() {
               <option value="CANDIDATE">Candidat</option>
             </select>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="ALL">Tous les statuts</option>
-              <option value="ACTIVE">Actif</option>
-              <option value="INACTIVE">Inactif</option>
-              <option value="SUSPENDED">Suspendu</option>
-            </select>
+            
           </div>
         </div>
 
@@ -234,9 +237,7 @@ export default function UsersListPage() {
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Rôle
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                      Statut
-                    </th>
+                   
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Créé le
                     </th>
@@ -275,25 +276,29 @@ export default function UsersListPage() {
                         {getRoleBadge(user.role)}
                       </td>
 
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        {getStatusBadge(user.status)}
-                      </td>
+                     
 
                       <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString('fr-FR')}
                       </td>
 
-                      <td className="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
-                        {user.role !== 'ADMIN' ? (
-                          <button
-                            onClick={() => handleDelete(user.id, user.email)}
-                            className="text-red-600 hover:text-red-800 font-semibold"
+                                            <td className="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-3">
+                          <Link
+                            href={`/dashboard/admin/users/edit/${user.id}`}
+                            className="text-indigo-600 hover:text-indigo-800 font-semibold"
                           >
-                            Supprimer
-                          </button>
-                        ) : (
-                          <span className="text-gray-400">Protégé</span>
-                        )}
+                            Modifier
+                          </Link>
+                          {user.role !== 'ADMIN' && (
+                            <button
+                              onClick={() => handleDelete(user.id, user.email)}
+                              className="text-red-600 hover:text-red-800 font-semibold"
+                            >
+                              Supprimer
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

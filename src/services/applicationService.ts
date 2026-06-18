@@ -30,10 +30,13 @@ export const applicationService = {
   },
 
   // Détails d'une candidature
-  async getApplicationById(id: number): Promise<Application> {
+  /* async getApplicationById(id: number): Promise<Application> {
     const response = await api.get<Application>(`/applications/${id}`);
     return response.data;
-  },
+  }, */
+
+  
+
 
   // Pré-sélectionner un candidat (Recruteur)
   async shortlist(id: number): Promise<Application> {
@@ -57,4 +60,11 @@ export const applicationService = {
   async delete(id: number): Promise<void> {
     await api.delete(`/applications/${id}`);
   },
+
+ async getApplicationById(applicationId: number): Promise<Application> {
+  const response = await api.get(`/applications/${applicationId}`);
+  return response.data;
+}
+
+
 };

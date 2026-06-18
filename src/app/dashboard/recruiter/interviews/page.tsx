@@ -5,7 +5,7 @@ import { interviewService } from '@/services/interviewService';
 import { Interview, InterviewType, InterviewStatus } from '@/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
+import toast from "react-hot-toast";
 export default function RecruiterInterviewsPage() {
   const router = useRouter();
   const [interviews, setInterviews] = useState<Interview[]>([]);
@@ -22,7 +22,7 @@ export default function RecruiterInterviewsPage() {
       const technicalInterviews = data.filter(i => i.type === InterviewType.TECHNICAL);
       setInterviews(technicalInterviews);
     } catch (error) {
-      console.error('Erreur:', error);
+      toast.error('❌ Erreur lors du chargement des entretiens');
     } finally {
       setLoading(false);
     }
@@ -118,9 +118,9 @@ export default function RecruiterInterviewsPage() {
       try {
         await interviewService.cancel(interviewId);
         await fetchInterviews();
-        alert('✅ Entretien annulé');
+        toast.success('✅ Entretien annulé');
       } catch (error) {
-        alert('❌ Erreur lors de l\'annulation');
+        toast.error('❌ Erreur lors de l\'annulation');
       }
     }
   };

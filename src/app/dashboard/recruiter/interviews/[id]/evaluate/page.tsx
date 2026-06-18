@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { interviewService } from '@/services/interviewService';
-
+import toast from "react-hot-toast";
 export default function RecruiterEvaluateInterviewPage() {
   const router = useRouter();
   const params = useParams();
@@ -20,7 +20,7 @@ export default function RecruiterEvaluateInterviewPage() {
     e.preventDefault();
     
     if (!formData.evaluation.trim()) {
-      alert('⚠️ Veuillez saisir une évaluation');
+      toast.error('⚠️ Veuillez saisir une évaluation');
       return;
     }
 
@@ -28,10 +28,10 @@ export default function RecruiterEvaluateInterviewPage() {
 
     try {
       await interviewService.evaluate(interviewId, formData);
-      alert('✅ Évaluation enregistrée avec succès !');
+      toast.success('✅ Évaluation enregistrée avec succès !');
       router.push('/dashboard/recruiter/interviews');
     } catch (error) {
-      alert('❌ Erreur lors de l\'enregistrement');
+      toast.error('❌ Erreur lors de l\'enregistrement');
     } finally {
       setLoading(false);
     }

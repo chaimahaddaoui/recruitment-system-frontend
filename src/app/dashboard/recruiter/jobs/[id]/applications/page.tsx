@@ -6,6 +6,8 @@ import { applicationService } from '@/services/applicationService';
 import { jobService } from '@/services/jobService';
 import { Application, Job, InterviewType, ApplicationStatus } from '@/types';
 import ScheduleInterviewModal from '@/components/ScheduleInterviewModal';
+import toast from "react-hot-toast";
+import AiScoreBadge from '@/components/applications/AiScoreBadge';
 
 export default function RecruiterApplicationsPage() {
   const params = useParams();
@@ -38,8 +40,8 @@ export default function RecruiterApplicationsPage() {
       setJob(jobData);
       setApplications(applicationsData);
     } catch (error: any) {
+      toast.error('❌ Erreur lors du chargement des candidatures');
       console.error('❌ Erreur:', error);
-      alert(`Erreur: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -49,9 +51,9 @@ export default function RecruiterApplicationsPage() {
     try {
       await applicationService.shortlist(applicationId);
       await fetchData();
-      alert('✅ Candidat pré-sélectionné avec succès !');
+      toast.success('✅ Candidat pré-sélectionné avec succès !');
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Erreur lors de la pré-sélection');
+      toast.error(error.response?.data?.message || 'Erreur lors de la pré-sélection');
     }
   };
 
@@ -61,9 +63,9 @@ export default function RecruiterApplicationsPage() {
     try {
       await applicationService.reject(applicationId);
       await fetchData();
-      alert('✅ Candidat rejeté');
+      toast.success('✅ Candidat rejeté');
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Erreur lors du rejet');
+      toast.error(error.response?.data?.message || 'Erreur lors du rejet');
     }
   };
 
@@ -290,10 +292,41 @@ export default function RecruiterApplicationsPage() {
         ) : (
           <div className="space-y-6">
             {filteredApplications.map((application) => (
-              <div key={application.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 p-8 border border-gray-100">
-                
-                {/* Header */}
-                <div className="flex justify-between items-start mb-6">
+                    <div key={application.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 p-8 border border-gray-100">
+                    
+                    {/* ✅ SCORE IA */}
+                    <div className="mb-4">
+                      {application.aiMatchScore !== null && application.aiMatchScore !== undefined ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                               `/dashboard/recruiter/jobs/${jobId}/applications/${application.id}/score`
+                              
+                            )
+                          }
+                          className="p-0 border-0 bg-transparent inline-flex"
+                        >
+                          <AiScoreBadge
+                            score={application.aiMatchScore}
+                            recommendation={
+                              application.aiAnalysis?.matching_result?.recommendation
+                            }
+                            size="md"
+                          />
+                        </button>
+                      ) : (
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-500 rounded-full text-sm">
+                          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Analyse en cours...
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Header */}
+                  <div className="flex justify-between items-start mb-6">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">

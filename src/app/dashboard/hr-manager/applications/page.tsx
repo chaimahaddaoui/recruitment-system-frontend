@@ -6,7 +6,7 @@ import { jobService } from '@/services/jobService';
 import { applicationService } from '@/services/applicationService';
 import { Application, Job, InterviewType, ApplicationStatus } from '@/types';
 import ScheduleInterviewModal from '@/components/ScheduleInterviewModal';
-
+import toast from "react-hot-toast";
 export default function HRApplicationsPage() {
   const router = useRouter();
   const [applications, setApplications] = useState<Application[]>([]);
@@ -52,9 +52,9 @@ export default function HRApplicationsPage() {
     try {
       await applicationService.reject(applicationId);
       await fetchData();
-      alert('✅ Candidat rejeté');
+      toast.success('✅ Candidat rejeté');
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Erreur lors du rejet');
+      toast.error(error.response?.data?.message || 'Erreur lors du rejet');
     }
   };
 

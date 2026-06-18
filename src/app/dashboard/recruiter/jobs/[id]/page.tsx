@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jobService } from '@/services/jobService';
 import { Job } from '@/types';
+import toast from "react-hot-toast";
 
 export default function JobDetailsPage() {
   const params = useParams();
@@ -27,7 +28,7 @@ export default function JobDetailsPage() {
       setJob(data);
     } catch (error) {
       console.error('Erreur:', error);
-      alert('Erreur lors du chargement de l\'offre');
+      toast.error('❌ Erreur lors du chargement de l\'offre');
     } finally {
       setLoading(false);
     }
@@ -38,10 +39,10 @@ export default function JobDetailsPage() {
 
     try {
       await jobService.closeJob(jobId!);
-      alert('✅ Offre fermée avec succès');
+      toast.success('✅ Offre fermée avec succès');
       router.push('/dashboard/recruiter/jobs');
     } catch (error) {
-      alert('❌ Erreur lors de la fermeture');
+      toast.error('❌ Erreur lors de la fermeture');
     }
   };
 
@@ -49,9 +50,9 @@ export default function JobDetailsPage() {
     try {
       await jobService.validateAndPublish(jobId!);
       await fetchJob();
-      alert('✅ Offre publiée avec succès');
+      toast.success('✅ Offre publiée avec succès');
     } catch (error) {
-      alert('❌ Erreur lors de la publication');
+      toast.error('❌ Erreur lors de la publication');
     }
   };
 
@@ -165,10 +166,10 @@ export default function JobDetailsPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Rémunération</h2>
             <p className="text-2xl font-bold text-green-600">
               {job.salaryMin && job.salaryMax
-                ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()} DT/an`
+                ? `${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()} DT/mois`
                 : job.salaryMin
-                ? `À partir de ${job.salaryMin.toLocaleString()} DT/an`
-                : `Jusqu'à ${job.salaryMax?.toLocaleString()} DT/an`}
+                ? `À partir de ${job.salaryMin.toLocaleString()} DT/mois`
+                : `Jusqu'à ${job.salaryMax?.toLocaleString()} DT/mois`}
             </p>
           </div>
         )}

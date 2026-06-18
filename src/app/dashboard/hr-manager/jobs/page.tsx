@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { jobService } from '@/services/jobService';
 import { Job, JobStatus } from '@/types';
 import Link from 'next/link';
-
+import toast from "react-hot-toast";
 export default function HRJobsPage() {
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -36,10 +36,10 @@ export default function HRJobsPage() {
 
       await fetchJobs();
 
-      alert('✅ Offre publiée avec succès !');
+      toast.success('✅ Offre publiée avec succès !');
     } catch (err) {
       console.error(err);
-      alert('❌ Erreur lors de la publication');
+      toast.error('❌ Erreur lors de la publication');
     } finally {
       setLoadingId(null);
     }

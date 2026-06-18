@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
-
+import toast from "react-hot-toast";
 export default function CreateUserPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -45,9 +45,9 @@ export default function CreateUserPage() {
         role: 'RECRUITER',
       });
     } catch (err: any) {
-      setError(
+      toast.error(
         err.response?.data?.message ||
-          "Erreur lors de la création de l'utilisateur"
+          "❌ Erreur lors de la création de l'utilisateur"
       );
     } finally {
       setLoading(false);

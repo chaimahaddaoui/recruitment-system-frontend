@@ -3,7 +3,7 @@
 import { JSX, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
-
+import toast from "react-hot-toast";
 export default function ApplicationsPage(): JSX.Element {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function ApplicationsPage(): JSX.Element {
         }
 
       } catch (error) {
-        console.error('Erreur:', error);
+        toast.error('❌ Erreur lors du chargement de vos candidatures');
         setApplications([]);
       } finally {
         setLoading(false);

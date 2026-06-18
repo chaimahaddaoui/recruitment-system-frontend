@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { applicationService } from '@/services/applicationService';
-
+import toast from "react-hot-toast";
 export default function ApplyPage() {
   const router = useRouter();
   const params = useParams();
@@ -85,7 +85,7 @@ export default function ApplyPage() {
       router.push('/dashboard/candidate/applications');
     }, 2000);
   } catch (err: any) {
-    setError(err.response?.data?.message || 'Erreur lors de l\'envoi de la candidature');
+    toast.error(err.response?.data?.message || '❌ Erreur lors de l\'envoi de la candidature');
   } finally {
     setLoading(false);
   }

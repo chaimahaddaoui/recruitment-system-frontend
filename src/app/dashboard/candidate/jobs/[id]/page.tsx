@@ -6,6 +6,7 @@ import { jobService } from '@/services/jobService';
 import { Job } from '@/types';
 import Link from 'next/link';
 
+
 export default function JobDetailsPage() {
   const router = useRouter();
   const params = useParams();

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { interviewService } from '@/services/interviewService';
-
+import toast from "react-hot-toast";
 export default function EvaluateInterviewPage() {
   const router = useRouter();
   const params = useParams();
@@ -22,10 +22,10 @@ export default function EvaluateInterviewPage() {
 
     try {
       await interviewService.evaluate(interviewId, formData);
-      alert('✅ Évaluation enregistrée avec succès !');
+      toast.success('✅ Évaluation enregistrée avec succès !');
       router.push('/dashboard/hr-manager/interviews');
     } catch (error) {
-      alert('❌ Erreur lors de l\'enregistrement');
+      toast.error('❌ Erreur lors de l\'enregistrement');
     } finally {
       setLoading(false);
     }

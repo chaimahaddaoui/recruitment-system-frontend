@@ -5,7 +5,6 @@ import { interviewService } from '@/services/interviewService';
 import { Interview, InterviewType, InterviewStatus } from '@/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 export default function HRInterviewsPage() {
   const router = useRouter();
   const [interviews, setInterviews] = useState<Interview[]>([]);

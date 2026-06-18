@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jobService } from '@/services/jobService';
 import { ContractType, Job } from '@/types';
-
+import toast from "react-hot-toast";
 export default function EditJobPage() {
   const params = useParams();
   const router = useRouter();
@@ -63,6 +63,7 @@ export default function EditJobPage() {
 
       setLoading(false);
     } catch (err: any) {
+      toast.error('❌ Erreur lors du chargement de l\'offre');
       console.error('Erreur:', err);
       setError('Erreur lors du chargement de l\'offre');
       setLoading(false);
@@ -100,14 +101,14 @@ export default function EditJobPage() {
 
       await jobService.updateJob(jobId!, updateData);
 
-      alert('✅ Offre modifiée avec succès');
+      toast.success('✅ Offre modifiée avec succès');
       router.push('/dashboard/recruiter/jobs');
 
     } catch (err: any) {
       console.error('Erreur:', err);
       const errorMessage = err.response?.data?.message || 'Erreur lors de la modification';
       setError(errorMessage);
-      alert('❌ ' + errorMessage);
+      toast.error('❌ ' + errorMessage);
     } finally {
       setSaving(false);
     }

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { jobService } from '@/services/jobService';
 import { ContractType, Job } from '@/types';
-
+import toast from "react-hot-toast";
 export default function HREditJobPage() {
   const params = useParams();
   const router = useRouter();
@@ -93,14 +93,14 @@ export default function HREditJobPage() {
 
       await jobService.updateJob(jobId!, updateData);
 
-      alert('✅ Offre modifiée avec succès');
+      toast.success('✅ Offre modifiée avec succès');
       router.push('/dashboard/hr-manager/jobs');
 
     } catch (err: any) {
       console.error('Erreur:', err);
       const errorMessage = err.response?.data?.message || 'Erreur lors de la modification';
       setError(errorMessage);
-      alert('❌ ' + errorMessage);
+      toast.error('❌ ' + errorMessage);
     } finally {
       setSaving(false);
     }
@@ -135,14 +135,14 @@ export default function HREditJobPage() {
       // Puis publier
       await jobService.validateAndPublish(jobId!);
 
-      alert('✅ Offre modifiée et publiée avec succès');
+      toast.success('✅ Offre modifiée et publiée avec succès');
       router.push('/dashboard/hr-manager/jobs');
 
     } catch (err: any) {
       console.error('Erreur:', err);
       const errorMessage = err.response?.data?.message || 'Erreur lors de la publication';
       setError(errorMessage);
-      alert('❌ ' + errorMessage);
+      toast.error('❌ ' + errorMessage);
     } finally {
       setSaving(false);
     }

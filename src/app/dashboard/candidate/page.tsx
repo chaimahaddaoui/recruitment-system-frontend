@@ -5,6 +5,8 @@ import Cookies from 'js-cookie';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { applicationService } from '@/services/applicationService';
+import toast from "react-hot-toast";
+import ProfileMenu from '@/components/ProfileMenu';
 
 interface User {
   id: number;
@@ -53,7 +55,7 @@ export default function CandidateDashboard() {
         rejected: applications.filter((a: any) => a.status === 'REJECTED').length,
       });
     } catch (error) {
-      console.error(error);
+      toast.error('❌ Erreur lors du chargement des statistiques');
     } finally {
       setLoading(false);
     }
@@ -77,42 +79,33 @@ export default function CandidateDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       
-      {/* Header */}
+      {/* ==================== HEADER ==================== */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
+            {/* Gauche - Logo et titre */}
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Dashboard Candidat</h1>
-                <p className="text-sm text-gray-600">Bienvenue, {user?.firstName} {user?.lastName}</p>
+                <p className="text-sm text-gray-600">
+                  Bienvenue, {user?.firstName} {user?.lastName}
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-gray-700">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:shadow-lg text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105"
-              >
-                Déconnexion
-              </button>
-                 <Link
-  href="/dashboard/change-password"
-  className="px-5 py-2.5 rounded-xl border border-indigo-200 text-indigo-700 font-semibold hover:bg-indigo-50 transition"
->
-  Modifier mot de passe
-</Link>
-            </div>
-         
+
+            {/* Droite - PROFIL MENU */}
+            <ProfileMenu
+              userName={`${user?.firstName} ${user?.lastName}` || 'Admin'}
+              userEmail={user?.email || 'admin@email.com'}
+              userRole={user?.role || 'ADMIN'}
+            />
           </div>
         </div>
       </header>

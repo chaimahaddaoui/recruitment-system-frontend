@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { jobService } from '@/services/jobService';
 import { Job } from '@/types';
 import { useRouter } from 'next/navigation';
-
+import toast from "react-hot-toast";
 export default function CandidateJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function CandidateJobsPage() {
       const data = await jobService.getOpenJobs();
       setJobs(data);
     } catch (err) {
-      console.error(err);
+      toast.error('❌ Erreur lors du chargement des offres');
     } finally {
       setLoading(false);
     }

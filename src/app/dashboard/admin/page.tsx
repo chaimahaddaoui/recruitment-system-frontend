@@ -5,8 +5,8 @@ import Cookies from 'js-cookie';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import ProfileMenu from '@/components/ProfileMenu';
+import toast from "react-hot-toast";
 
 interface User {
   id: number;
@@ -105,6 +105,7 @@ export default function AdminDashboard() {
           rejectedApps += jobStat.rejected;
         } catch (error) {
           console.error(`Erreur pour l'offre ${job.id}:`, error);
+          toast.error('❌ Erreur lors du chargement des statistiques pour une offre');
         }
       }
 
@@ -126,16 +127,10 @@ export default function AdminDashboard() {
       });
     } catch (error) {
       console.error('Erreur lors du chargement des stats:', error);
-      alert('Erreur lors du chargement des statistiques');
+      toast.error('❌ Erreur lors du chargement des statistiques');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('user');
-    router.push('/auth/login');
   };
 
   if (loading) {
@@ -152,10 +147,11 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       
-      {/* Header */}
+      {/* ==================== HEADER ==================== */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
+            {/* Gauche - Logo et titre */}
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,36 +165,28 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-             
-              <button
-                onClick={handleLogout}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:shadow-lg text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105"
-              >
-                Déconnexion
-              </button>
-              <Link
-  href="/dashboard/change-password"
-  className="px-5 py-2.5 rounded-xl border border-indigo-200 text-indigo-700 font-semibold hover:bg-indigo-50 transition"
->
-  Modifier mot de passe
-</Link>
-            </div>
-            
+
+            {/* Droite - PROFIL MENU */}
+            <ProfileMenu
+              userName={`${user?.firstName} ${user?.lastName}` || 'Admin'}
+              userEmail={user?.email || 'admin@email.com'}
+              userRole={user?.role || 'ADMIN'}
+            />
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* ==================== MAIN CONTENT ==================== */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Stats Overview */}
+        {/* ============ Vue d'ensemble de la plateforme ============ */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Vue d'ensemble de la plateforme</h2>
           
           {/* Primary Stats - Utilisateurs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             
+            {/* Total Utilisateurs */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
@@ -211,6 +199,7 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">Total utilisateurs</p>
             </div>
 
+            {/* Recruteurs */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -223,6 +212,7 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">Recruteurs</p>
             </div>
 
+            {/* RH Managers */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -235,6 +225,7 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">RH Managers</p>
             </div>
 
+            {/* Candidats */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -267,7 +258,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   {stats.openJobs} ouvertes
@@ -310,7 +301,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Rapport détaillé par offre */}
+        {/* ============ Rapport détaillé par offre ============ */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Rapport détaillé par offre</h2>
@@ -410,11 +401,12 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Actions Admin (reste inchangé) */}
+        {/* ============ Gestion & Administration ============ */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Gestion & Administration</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
+            {/* Créer un utilisateur */}
             <Link
               href="/dashboard/admin/users/create"
               className="group bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-200 border border-gray-100 hover:border-indigo-200 hover:scale-105"
@@ -433,6 +425,7 @@ export default function AdminDashboard() {
               <p className="text-gray-600 text-sm">Ajouter un nouveau compte utilisateur</p>
             </Link>
 
+            {/* Gérer les utilisateurs */}
             <Link
               href="/dashboard/admin/users"
               className="group bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-200 border border-gray-100 hover:border-blue-200 hover:scale-105"
@@ -454,6 +447,7 @@ export default function AdminDashboard() {
               </div>
             </Link>
 
+            {/* Gérer les offres */}
             <Link
               href="/dashboard/admin/jobs"
               className="group bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-200 border border-gray-100 hover:border-green-200 hover:scale-105"
@@ -475,44 +469,6 @@ export default function AdminDashboard() {
               </div>
             </Link>
 
-          </div>
-        </div>
-
-        {/* System Status */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">État du système</h2>
-              <p className="text-sm text-gray-600">Tous les services fonctionnent normalement</p>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-gray-700">API Backend</span>
-              </div>
-              <span className="text-xs font-bold text-green-700">Opérationnel</span>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-gray-700">Base de données</span>
-              </div>
-              <span className="text-xs font-bold text-green-700">Opérationnel</span>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-gray-700">Emails</span>
-              </div>
-              <span className="text-xs font-bold text-green-700">Opérationnel</span>
-            </div>
           </div>
         </div>
 
